@@ -1,30 +1,47 @@
 import { useState } from 'react';
-import { wallet_backend } from 'declarations/wallet_backend';
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Register from './components/Register';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import CustomerDashboard from './components/Customer';
+import AgentDashboard from './components/Agent';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const [greeting, setGreeting] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    wallet_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+  const route = createBrowserRouter([
+    {
+      path: "/",
+      element: <Login />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
+    },
+    {
+      path: "/dashboard",
+      element: (
+        <ProtectedRoute component={Dashboard} allowedRoles={['Admin']} />
+      ),
+    },
+    {
+      path: "/customer",
+      element: (
+        <ProtectedRoute component={CustomerDashboard} allowedRoles={['Customer']} />
+      ),
+    },
+    {
+      path: "/agent",
+      element: (
+        <ProtectedRoute component={AgentDashboard} allowedRoles={['Agent']} />
+      ),
+    },
+   
+  ]);
 
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <div className="App">
+      <RouterProvider router={route}></RouterProvider>
+    </div>
   );
 }
 
